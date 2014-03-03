@@ -1,0 +1,796 @@
+﻿<!DOCTYPE html>
+<!--HTML5 doctype-->
+<html>
+
+    <head>
+        <script>
+        (function() {
+			if ("-ms-user-select" in document.documentElement.style && navigator.userAgent.match(/IEMobile\/10\.0/)) {
+				var msViewportStyle = document.createElement("style");
+				msViewportStyle.appendChild(
+					document.createTextNode("@-ms-viewport{width:auto!important}")
+				);
+				document.getElementsByTagName("head")[0].appendChild(msViewportStyle);
+			}
+		})();
+		</script>
+        <title>showingCloud修酝app</title>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <link rel="stylesheet" type="text/css" href="css/icons.css" />    
+ 		<link rel="stylesheet" type="text/css" href="css/af.ui.css" title="default" /> 
+        <script type="text/javascript" charset="utf-8" src="./appframework.min.js"></script>
+        
+        <!-- include af.desktopBrowsers.js on desktop browsers only -->
+        <script>
+            function loadedPanel(what) {
+                //We are going to set the badge as the number of li elements inside the target
+                $.ui.updateBadge("#aflink", $("#af").find("li").length);
+            }
+
+
+            function unloadedPanel(what) {
+                console.log("unloaded " + what.id);
+            }
+
+            if (!((window.DocumentTouch && document instanceof DocumentTouch) || 'ontouchstart' in window)) {
+                var script = document.createElement("script");
+                script.src = "plugins/af.desktopBrowsers.js";
+                var tag = $("head").append(script);
+            }
+        </script>
+        <script type="text/javascript" charset="utf-8" src="./plugins/af.actionsheet.js"></script>
+        <script type="text/javascript" charset="utf-8" src="./plugins/af.css3animate.js"></script>
+        <script type="text/javascript" charset="utf-8" src="./plugins/af.passwordBox.js"></script>
+        <script type="text/javascript" charset="utf-8" src="./plugins/af.scroller.js"></script>
+        <script type="text/javascript" charset="utf-8" src="./plugins/af.selectBox.js"></script>
+        <script type="text/javascript" charset="utf-8" src="./plugins/af.touchEvents.js"></script>
+        <script type="text/javascript" charset="utf-8" src="./plugins/af.touchLayer.js"></script>
+        <script type="text/javascript" charset="utf-8" src="./plugins/af.popup.js"></script>
+
+        <script type="text/javascript" charset="utf-8" src="./ui/src/appframework.ui.js"></script>
+        <!-- <script type="text/javascript" charset="utf-8" src="./ui/transitions/all.js"></script> -->
+        
+        
+        
+        <script type="text/javascript" charset="utf-8" src="./ui/transitions/fade.js"></script>
+        <script type="text/javascript" charset="utf-8" src="./ui/transitions/flip.js"></script>
+        <script type="text/javascript" charset="utf-8" src="./ui/transitions/pop.js"></script>
+        <script type="text/javascript" charset="utf-8" src="./ui/transitions/slide.js"></script>
+        <script type="text/javascript" charset="utf-8" src="./ui/transitions/slideDown.js"></script>
+        <script type="text/javascript" charset="utf-8" src="./ui/transitions/slideUp.js"></script>
+        
+        <script type="text/javascript" charset="utf-8" src="./plugins/af.slidemenu.js"></script>     
+
+        <script type="text/javascript">
+            /* This function runs once the page is loaded, but appMobi is not yet active */
+            //$.ui.animateHeaders=false;
+             var search=document.location.search.toLowerCase().replace("?","");
+             //if(!search)
+                //$.os.useOSThemes=false;
+                
+            if(search) //Android fix has too many buggy issues on iOS - can't preview with $.os.android
+            {
+
+               $.os.useOSThemes=false;
+                if(search=="win8")
+                    $.os.ie=true;
+                $.ui.ready(function(){
+                    $("#afui").get(0).className=search;    //设置属于那种风格
+                });
+            }
+            
+            var webRoot = "./";   //定义网站的根目录
+            // $.os.android=true;
+            $.ui.autoLaunch = false;
+            $.ui.openLinksNewTab = false;
+            //$.ui.resetScrollers=false;
+            
+
+            $(document).ready(function(){
+                   $.ui.launch();
+
+            });
+            
+            /* This code is used to run as soon as appMobi activates */
+            var onDeviceReady = function () {
+                AppMobi.device.setRotateOrientation("portrait");
+                AppMobi.device.setAutoRotate(false);
+                webRoot = AppMobi.webRoot + "";
+                //hide splash screen
+                AppMobi.device.hideSplashScreen();
+                $.ui.blockPageScroll(); //block the page from scrolling at the header/footer
+                $.ui.launch();
+
+            };
+            document.addEventListener("intel.xdk.device.ready", onDeviceReady, false);
+			//切换显示隐藏
+            function showHide(obj, objToHide) {
+                var el = $("#" + objToHide)[0];
+
+                if (obj.className == "expanded") {
+                    obj.className = "collapsed";
+                } else {
+                    obj.className = "expanded";
+                }
+                $(el).toggle();
+
+            }
+            if($.os.android||$.os.ie||search=="android"){
+                $.ui.ready(function(){
+                    $("#main .list").append("<li><a id='toggleAndroidTheme'>Toggle Theme Color</a></li>");
+                    var $el=$("#afui");
+                    $("#toggleAndroidTheme").bind("click",function(e){
+                        if($el.hasClass("light"))
+                            $el.removeClass("light");
+                        else
+                            $el.addClass("light");
+                    });
+                });
+            }
+
+			function lsSetItem(id){
+					var ls = window.localStorage;
+					ls.setItem('id',id);
+					console.log('设置id成功');
+								
+			}
+			function lsGetItem(){
+					var ls = window.localStorage;
+					return ls.getItem('id');								
+			}
+			function scrollItem(id){
+				if(id==1){
+					var str='<ul>';
+					
+					for(var i=1;i<50;i++){
+						str+='<li>这是id=1的内容</li>';
+					}
+					str+='</ul>';
+					$("#iscroll").html(str);
+				}else{
+					var str='<ul>';
+					
+					for(var i=1;i<50;i++){
+						str+='<li>这是id=2的内容</li>';
+					}
+					str+='</ul>';
+					$("#iscroll").html(str);
+					
+				}
+				
+			}
+
+
+        </script>
+        <style>
+           .samplecode {
+                background: #ccc;
+                color: #000;
+                border-radius: 10px;
+                padding: 10px;
+                margin-bottom: 10px;
+                margin-top: 10px;
+           }        
+        </style>
+</head>
+
+    <body>
+        <div id="afui" class="">
+            <!-- this is the splashscreen you see. -->
+            <div id="splashscreen" class='ui-loader heavy'>
+                App Framework
+                <br>
+                <br>	<span class='ui-icon ui-icon-loading spin'></span>
+                <h1>Starting app</h1>
+            </div>
+            <div id="header">
+                <a id='menubadge' onclick='af.ui.toggleSideMenu()' class='menuButton'></a>
+            </div>
+            <div id="content">
+                <div title='Welcome' id="main" class="panel" selected="true" data-load="loadedPanel" data-unload="unloadedPanel" data-tab="navbar_home" data-footer="footerui">
+                    <h2 class='expanded' onclick='showHide(this,"main_info");'>ShowingCloud修酝</h2>
+
+                    <p id='main_info'>ShowingCloud修酝软件专业提供云计算平台设施及解决方案，提供基于标准化云计算平台的网站设计及托管、上层应用程序设计、移动App开发、SaaS等服务</p>
+                    <ul class="list">
+                        <li class='red'>
+                            <a href="#af" id='aflink' class='icon home big'>App Framework</a>
+                        </li>
+                        <li class="blue">
+                            <a href="#afuidemo">App Framework UI</a>
+                        </li>
+                        <li>
+                            <a href="index.html" data-ignore="true">App Framework theme</a>
+                        </li>
+                         <li>
+                            <a href="index.html?ios" data-ignore="true">iOS theme</a>
+                        </li>
+                        <li>
+                            <a href="index.html?android" data-ignore="true">Android theme</a>
+                        </li>
+                        <li>
+                            <a href="index.html?win8" data-ignore="true">Win8 theme</a>
+                        </li>
+                        <li>
+                            <a href="index.html?bb" data-ignore="true">BB10 theme</a>
+                        </li>
+                       <li>
+                            <a href="index.html?ios7" data-ignore="true">ios7</a>
+                        </li>
+                         <li>
+                            <a href="#aftransitions">Transitions</a>
+                        </li>
+                        <li>
+                            <a href="#afforms">Form Styles</a>
+                        </li>
+                        <li>
+                            <a href="#afgrid">Grid System</a>
+                        </li>
+                        <li>
+                            <a href="#uiapi">$.ui API</a>
+                        </li>
+                         <li>
+                            <a href="#uiinsetlist">Inset List</a>
+                        </li>
+                         <li>
+                            <a href="#uibuttons">Buttons</a>
+                        </li>
+                        <li>
+                            <a href="#uifooter">Custom Footers</a>
+                        </li>
+                        <li>
+                            <a href="#uiside">Side Navigation Menu</a>
+                        </li>
+                        <li>
+                            <a href="#uiicons">Vector Icons</a>
+                        </li>
+                        <li>
+                            <a href="ajax.html" data-persist-ajax="true" data-refresh-ajax="true" title="Remote Page" data-pull-scroller="true">Load External Content</a>
+                        </li>
+                        <li>
+                            <a href="http://www.AppFramework.com" target="_blank">Open a new page</a>
+                        </li>
+                         <li>
+                            <a href="#aftransitions">Transitions</a>
+                        </li>
+                        <li>
+                            <a href="#afforms">Form Styles</a>
+                        </li>
+                        <li>
+                            <a href="#afgrid">Grid System</a>
+                        </li>
+                        <li>
+                            <a href="#uiapi">$.ui API</a>
+                        </li>
+                         <li>
+                            <a href="#uiinsetlist">Inset List</a>
+                        </li>
+                         <li>
+                            <a href="#uibuttons">Buttons</a>
+                        </li>
+                        <li>
+                            <a href="#uifooter">Custom Footers</a>
+                        </li>
+                        <li>
+                            <a href="#uiside">Side Navigation Menu</a>
+                        </li>
+                        <li>
+                            <a href="#uiicons">Vector Icons</a>
+                        </li>
+                        <li>
+                            <a href="ajax.html" data-persist-ajax="true" data-refresh-ajax="true" title="Remote Page" data-pull-scroller="true">Load External Content</a>
+                        </li>
+                        <li>
+                            <a href="http://www.AppFramework.com" target="_blank">Open a new page</a>
+                        </li>
+                         <li>
+                            <a href="#aftransitions">Transitions</a>
+                        </li>
+                        <li>
+                            <a href="#afforms">Form Styles</a>
+                        </li>
+                        <li>
+                            <a href="#afgrid">Grid System</a>
+                        </li>
+                        <li>
+                            <a href="#uiapi">$.ui API</a>
+                        </li>
+                         <li>
+                            <a href="#uiinsetlist">Inset List</a>
+                        </li>
+                         <li>
+                            <a href="#uibuttons">Buttons</a>
+                        </li>
+                        <li>
+                            <a href="#uifooter">Custom Footers</a>
+                        </li>
+                        <li>
+                            <a href="#uiside">Side Navigation Menu</a>
+                        </li>
+                        <li>
+                            <a href="#uiicons">Vector Icons</a>
+                        </li>
+                        <li>
+                            <a href="ajax.html" data-persist-ajax="true" data-refresh-ajax="true" title="Remote Page" data-pull-scroller="true">Load External Content</a>
+                        </li>
+                        <li>
+                            <a href="http://www.AppFramework.com" target="_blank">Open a new page</a>
+                        </li>
+                        
+
+                    </ul>
+                </div>               
+               
+                <!-- App Framework UI -->
+                <div title="关于我们" id="info" class="panel" data-footer='footerui'>
+                    	<h2 class='expanded' onclick='showHide(this,"AFUI_info");'>关于我们</h2>
+                    <p id='AFUI_info'>关于我们ShowingCloud修酝软件专业提供云计算平台设施及解决方案，提供基于标准化云计算平台的网站设计及托管、上层应用程序设计、移动App开发、SaaS等服务.
+                        <br>* Fixed navigation bar
+                        <br>* Auto scrolling content panels
+                        <br>* Optional footer to segment your application
+                        <br>
+                    </p>
+                    <ul class="list">
+                        <li>
+                            <a href="#aftransitions">Transitions</a>
+                        </li>
+                        <li>
+                            <a href="#afforms">Form Styles</a>
+                        </li>
+                        <li>
+                            <a href="#afgrid">Grid System</a>
+                        </li>
+                        <li>
+                            <a href="#uiapi">$.ui API</a>
+                        </li>
+                         <li>
+                            <a href="#uiinsetlist">Inset List</a>
+                        </li>
+                         <li>
+                            <a href="#uibuttons">Buttons</a>
+                        </li>
+                        <li>
+                            <a href="#uifooter">Custom Footers</a>
+                        </li>
+                        <li>
+                            <a href="#uiside">Side Navigation Menu</a>
+                        </li>
+                        <li>
+                            <a href="#uiicons">Vector Icons</a>
+                        </li>
+                        <li>
+                            <a href="ajax.html" data-persist-ajax="true" data-refresh-ajax="true" title="Remote Page" data-pull-scroller="true">Load External Content</a>
+                        </li>
+                        <li>
+                            <a href="http://www.AppFramework.com" target="_blank">Open a new page</a>
+                        </li>
+                        <li>
+                            <a href="#uidefer">Defer loading</a>
+                        </li>
+                    </ul>
+                </div>
+                <div id="settings" title="系统设置" class="panel" data-footer='footerui'>
+                    	<h2 class='expanded' onclick='showHide(this,"icons_info");'>Vector Icons</h2>
+                    <p id='icons_info'>系统设置ShowingCloud修酝软件专业提供云计算平台设施及解决方案，提供基于标准化云计算平台的网站设计及托管、上层应用程序设计、移动App开发、SaaS等服务
+                        <br>.mini -  .7em high
+                        <br>.big - 1.5em hight
+                        <br>The default is 1em.
+                        <br>
+                    </p>
+                    <ul class="list">
+                        <li>
+                            <a  class="icon home">Home</a>
+                        </li>
+                        <li>
+                            <a  class="icon home mini">Home Mini</a>
+                        </li>
+                        <li>
+                            <a  class="icon pencil big">Pencil</a>
+                        </li>
+                        <li>
+                            <a  class="icon picture big">Picture</a>
+                        </li>
+                        <li>
+                            <a  class="icon camera big">Camera</a>
+                        </li>
+                        <li>
+                            <a  class="icon headset big">Headset</a>
+                        </li>
+                        <li>
+                            <a  class="icon paper big">Paper</a>
+                        </li>
+                        <li>
+                            <a  class="icon stack big">Stack</a>
+                        </li>
+                        <li>
+                            <a  class="icon folder big">Folder</a>
+                        </li>
+                        <li>
+                            <a  class="icon tag big">Tag</a>
+                        </li>
+                        <li>
+                            <a  class="icon basket big">Basket</a>
+                        </li>
+                        <li>
+                            <a  class="icon phone big">Phone</a>
+                        </li>
+                        <li>
+                            <a  class="icon mail big">Mail</a>
+                        </li>
+                        <li>
+                            <a  class="icon location big">Location</a>
+                        </li>
+                        <li>
+                            <a  class="icon clock big">Clock</a>
+                        </li>
+                        <li>
+                            <a  class="icon calendar big">Calendar</a>
+                        </li>
+                        <li>
+                            <a  class="icon message big">Message</a>
+                        </li>
+                        <li>
+                            <a  class="icon chat big">Chat</a>
+                        </li>
+                        <li>
+                            <a  class="icon user big">User</a>
+                        </li>
+                        <li>
+                            <a  class="icon loading big">Loading</a>
+                        </li>
+                        <li>
+                            <a  class="icon refresh big">Refresh</a>
+                        </li>
+                        <li>
+                            <a  class="icon magnifier big">Magnifier</a>
+                        </li>
+                        <li>
+                            <a  class="icon key big">Key</a>
+                        </li>
+                        <li>
+                            <a  class="icon settings big">Settings</a>
+                        </li>
+                        <li>
+                            <a  class="icon graph big">Graph</a>
+                        </li>
+                        <li>
+                            <a  class="icon trash big">Trash</a>
+                        </li>
+                        <li>
+                            <a  class="icon pin big">Pin</a>
+                        </li>
+                        <li>
+                            <a  class="icon target big">Target</a>
+                        </li>
+                        <li>
+                            <a  class="icon download big">Download</a>
+                        </li>
+                        <li>
+                            <a  class="icon upload big">Upload</a>
+                        </li>
+                        <li>
+                            <a  class="icon star big">Star</a>
+                        </li>
+                        <li>
+                            <a  class="icon heart big">Heart</a>
+                        </li>
+                        <li>
+                            <a  class="icon warning big">Warning</a>
+                        </li>
+                        <li>
+                            <a  class="icon add big">Add</a>
+                        </li>
+                        <li>
+                            <a  class="icon remove big">Remove</a>
+                        </li>
+                        <li>
+                            <a  class="icon question big">Question</a>
+                        </li>
+                        <li>
+                            <a  class="icon info big">Info</a>
+                        </li>
+                        <li>
+                            <a  class="icon error big">Error</a>
+                        </li>
+                        <li>
+                            <a  class="icon check big">Check</a>
+                        </li>
+                        <li>
+                            <a  class="icon minimize big">Minimize</a>
+                        </li>
+                        <li>
+                            <a  class="icon close big">Close</a>
+                        </li>
+                        <li>
+                            <a  class="icon up big">Up</a>
+                        </li>
+                        <li>
+                            <a  class="icon down big">Down</a>
+                        </li>
+                        <li>
+                            <a  class="icon left big">Left</a>
+                        </li>
+                        <li>
+                            <a  class="icon right big">Right</a>
+                        </li>
+                        <li>
+                            <a  class="icon tools big">Tools</a>
+                        </li>
+                        <li>
+                            <a  class="icon html5 big">HTML5</a>
+                        </li>
+                        <li>
+                            <a  class="icon css big">CSS</a>
+                        </li>
+                        <li>
+                            <a  class="icon js big">JS</a>
+                        </li>
+                        <li>
+                            <a  class="icon cloud big">Cloud</a>
+                        </li>
+                        <li>
+                            <a  class="icon tv big">TV</a>
+                        </li>
+                        <li>
+                            <a  class="icon wifi big">Wifi</a>
+                        </li>
+                        <li>
+                            <a  class="icon new big">New</a>
+                        </li>
+                        <li>
+                            <a  class="icon mic big">Mic</a>
+                        </li>
+                        <li>
+                            <a  class="icon database big">Database</a>
+                        </li>
+                        <li>
+                            <a  class="icon busy big">Busy</a>
+                        </li>
+                        <li>
+                            <a  class="icon bug big">Bug</a>
+                        </li>
+                        <li>
+                            <a  class="icon lamp big">Lamp</a>
+                        </li>
+                    </ul>
+                </div>
+            <!-- navbar -->
+            <!--scroller开始-->
+            <div title="Scroller" class="panel" id="webslider">
+                    <script>
+                        var myScroller;
+                        $.ui.ready(function () {
+                            myScroller = $("#webslider").scroller(); //Fetch the scroller from cache
+                            //Since this is a App Framework UI scroller, we could also do
+                            // myScroller=$.ui.scrollingDivs['webslider'];
+                            myScroller.addInfinite();
+                            myScroller.addPullToRefresh();
+                            $.bind(myScroller, 'scrollend', function () {
+                                console.log("scroll end");
+                            });
+
+                            $.bind(myScroller, 'scrollstart', function () {
+                                console.log("scroll start");
+                            });
+                            
+                            $.bind(myScroller, "refresh-trigger", function () {
+                                console.log("refresh-trigger");
+								 $(this.el).append("<div id='infinite' style='height:60px;line-height:60px;text-align:center;font-weight:bold'>正在加载请稍后...</div>");
+								
+								
+								
+                            });
+                            
+                            var hideClose;
+                            $.bind(myScroller, "refresh-release", function () {
+                                console.log("refresh-release");
+                                var that = this;
+                                clearTimeout(hideClose);
+                                hideClose = setTimeout(function () {
+                                    console.log("hiding manually refresh");									
+									   $("#infinite").remove();
+									   //$('#webslider').prepend("<div>上拉增加的内容</div>");
+									   $.jsonP({
+											url:'http://jsfiddle.net/echo/jsonp/?test=some+html+content&callback=?',		
+										//	http://www.57lehuo.com/index.php?a=index&m=api&method=itemsSearchGet&keyword=连衣裙&sign=5cb85c3eed22c1908e05c584813c8dd2
+											success:function(json){
+												//$('#af23_content').html(data.test)						
+//														$("#thelist").append("<li>"+json['test']+"</li>");
+$('#iscroll').prepend("<div>"+json['test']+"</div>");
+													
+											}
+										});	
+									   //$('#iscroll').prepend("<div>上拉增加的内容</div>");
+                                      //  self.scrollToTop();
+																		
+                                    that.hideRefresh();
+                                }, 1000);
+                                return false; //tells it to not auto-cancel the refresh
+                            });
+
+                            $.bind(myScroller, "refresh-cancel", function () {
+                                console.log("refresh-cancel");
+                                clearTimeout(hideClose);
+                            });
+                            
+                            $.bind(myScroller, "refresh-finish", function () {
+                                console.log("refresh-finish");
+                            });
+                            
+                            myScroller.enable();
+
+                            $.bind(myScroller, "infinite-scroll", function () {
+                                var self = this;
+                                console.log("infinite triggered");
+                                $(this.el).append("<div id='infinite' style='height:60px;line-height:60px;text-align:center;font-weight:bold'>正在加载请稍后...</div>");
+                                $.bind(myScroller, "infinite-scroll-end", function () {
+                                    $.unbind(myScroller, "infinite-scroll-end");
+                                    self.scrollToBottom();
+                                    setTimeout(function () {
+                                        $(self.el).find("#infinite").remove();
+                                        self.clearInfinite();
+                                        $(self.el).append("<div>下拉增加的内容This was loaded via inifinite scroll<br>More Content</div>");
+                                        self.scrollToBottom();
+                                    }, 1000);
+                                });
+                            });
+                            $("#webslider").css("overflow", "auto");
+                        });
+                    </script>
+                    
+                    <div id="iscroll">Lore <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta, lorem sit amet feugiat lacinia, mi dui sodales eros, id lacinia mauris urna eu est. Proin pulvinar, augue sed convallis elementum, magna diam pharetra magna, id vestibulum est eros
+                        vitae ante. Ut auctor erat a tellus venenatis eu fermentum lorem scelerisque. Cras dignissim leo ornare massa sollicitudin sit amet pulvinar turpis hendrerit. Morbi hendrerit nunc eget turpis luctus id ultricies lorem consequat. Donec eu lacus sed mauris
+                        sollicitudin laoreet. Cras vitae sodales diam. Donec mollis, libero ut pellentesque dignissim, risus orci ornare nisi, sed eleifend enim purus malesuada neque. Nulla tellus sem, scelerisque sed sagittis id, eleifend venenatis ligula. Vivamus placerat
+                        neque sit amet metus ultricies facilisis. Nulla a odio magna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed commodo quam eu enim lacinia vitae ultrices nulla mollis. Aenean eget lectus turpis, at ultrices
+                        leo. Nulla vehicula magna in risus ornare vestibulum. Integer gravida magna quam. Donec augue ante, fringilla non congue eu, aliquam lacinia nisi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas nisl
+                        ante, suscipit ut suscipit nec, dictum sit amet orci. Maecenas fermentum sapien turpis, sit amet eleifend justo. Aenean auctor interdum sem sed tincidunt. Aliquam ullamcorper malesuada fermentum. Nunc consectetur, ipsum et pulvinar ultrices, lorem nibh
+                        egestas sapien, at egestas lorem metus sit amet lacus. Maecenas non feugiat orci. Curabitur imperdiet tempus lacus, volutpat fermentum diam convallis a. In hac habitasse platea dictumst. Pellentesque nec ipsum diam, at consectetur elit. Duis feugiat ullamcorper
+                        libero tincidunt aliquet. Sed leo nisl, iaculis non pellentesque nec, scelerisque vel felis</div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta, lorem sit amet feugiat lacinia, mi dui sodales eros, id lacinia mauris urna eu est. Proin pulvinar, augue sed convallis elementum, magna diam pharetra magna, id vestibulum est eros
+                        vitae ante. Ut auctor erat a tellus venenatis eu fermentum lorem scelerisque. Cras dignissim leo ornare massa sollicitudin sit amet pulvinar turpis hendrerit. Morbi hendrerit nunc eget turpis luctus id ultricies lorem consequat. Donec eu lacus sed mauris
+                        sollicitudin laoreet. Cras vitae sodales diam. Donec mollis, libero ut pellentesque dignissim, risus orci ornare nisi, sed eleifend enim purus malesuada neque. Nulla tellus sem, scelerisque sed sagittis id, eleifend venenatis ligula. Vivamus placerat
+                        neque sit amet metus ultricies facilisis. Nulla a odio magna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed commodo quam eu enim lacinia vitae ultrices nulla mollis. Aenean eget lectus turpis, at ultrices
+                        leo. Nulla vehicula magna in risus ornare vestibulum. Integer gravida magna quam. Donec augue ante, fringilla non congue eu, aliquam lacinia nisi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas nisl
+                        ante, suscipit ut suscipit nec, dictum sit amet orci. Maecenas fermentum sapien turpis, sit amet eleifend justo. Aenean auctor interdum sem sed tincidunt. Aliquam ullamcorper malesuada fermentum. Nunc consectetur, ipsum et pulvinar ultrices, lorem nibh
+                        egestas sapien, at egestas lorem metus sit amet lacus. Maecenas non feugiat orci. Curabitur imperdiet tempus lacus, volutpat fermentum diam convallis a. In hac habitasse platea dictumst. Pellentesque nec ipsum diam, at consectetur elit. Duis feugiat ullamcorper
+                        libero tincidunt aliquet. Sed leo nisl, iaculis non pellentesque nec, scelerisque vel felis</div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta, lorem sit amet feugiat lacinia, mi dui sodales eros, id lacinia mauris urna eu est. Proin pulvinar, augue sed convallis elementum, magna diam pharetra magna, id vestibulum est eros
+                        vitae ante. Ut auctor erat a tellus venenatis eu fermentum lorem scelerisque. Cras dignissim leo ornare massa sollicitudin sit amet pulvinar turpis hendrerit. Morbi hendrerit nunc eget turpis luctus id ultricies lorem consequat. Donec eu lacus sed mauris
+                        sollicitudin laoreet. Cras vitae sodales diam. Donec mollis, libero ut pellentesque dignissim, risus orci ornare nisi, sed eleifend enim purus malesuada neque. Nulla tellus sem, scelerisque sed sagittis id, eleifend venenatis ligula. Vivamus placerat
+                        neque sit amet metus ultricies facilisis. Nulla a odio magna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed commodo quam eu enim lacinia vitae ultrices nulla mollis. Aenean eget lectus turpis, at ultrices
+                        leo. Nulla vehicula magna in risus ornare vestibulum. Integer gravida magna quam. Donec augue ante, fringilla non congue eu, aliquam lacinia nisi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas nisl
+                        ante, suscipit ut suscipit nec, dictum sit amet orci. Maecenas fermentum sapien turpis, sit amet eleifend justo. Aenean auctor interdum sem sed tincidunt. Aliquam ullamcorper malesuada fermentum. Nunc consectetur, ipsum et pulvinar ultrices, lorem nibh
+                        egestas sapien, at egestas lorem metus sit amet lacus. Maecenas non feugiat orci. Curabitur imperdiet tempus lacus, volutpat fermentum diam convallis a. In hac habitasse platea dictumst. Pellentesque nec ipsum diam, at consectetur elit. Duis feugiat ullamcorper
+                        libero tincidunt aliquet. Sed leo nisl, iaculis non pellentesque nec, scelerisque vel felis</div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta, lorem sit amet feugiat lacinia, mi dui sodales eros, id lacinia mauris urna eu est. Proin pulvinar, augue sed convallis elementum, magna diam pharetra magna, id vestibulum est eros
+                        vitae ante. Ut auctor erat a tellus venenatis eu fermentum lorem scelerisque. Cras dignissim leo ornare massa sollicitudin sit amet pulvinar turpis hendrerit. Morbi hendrerit nunc eget turpis luctus id ultricies lorem consequat. Donec eu lacus sed mauris
+                        sollicitudin laoreet. Cras vitae sodales diam. Donec mollis, libero ut pellentesque dignissim, risus orci ornare nisi, sed eleifend enim purus malesuada neque. Nulla tellus sem, scelerisque sed sagittis id, eleifend venenatis ligula. Vivamus placerat
+                        neque sit amet metus ultricies facilisis. Nulla a odio magna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed commodo quam eu enim lacinia vitae ultrices nulla mollis. Aenean eget lectus turpis, at ultrices
+                        leo. Nulla vehicula magna in risus ornare vestibulum. Integer gravida magna quam. Donec augue ante, fringilla non congue eu, aliquam lacinia nisi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas nisl
+                        ante, suscipit ut suscipit nec, dictum sit amet orci. Maecenas fermentum sapien turpis, sit amet eleifend justo. Aenean auctor interdum sem sed tincidunt. Aliquam ullamcorper malesuada fermentum. Nunc consectetur, ipsum et pulvinar ultrices, lorem nibh
+                        egestas sapien, at egestas lorem metus sit amet lacus. Maecenas non feugiat orci. Curabitur imperdiet tempus lacus, volutpat fermentum diam convallis a. In hac habitasse platea dictumst. Pellentesque nec ipsum diam, at consectetur elit. Duis feugiat ullamcorper
+                        libero tincidunt aliquet. Sed leo nisl, iaculis non pellentesque nec, scelerisque vel felis</div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta, lorem sit amet feugiat lacinia, mi dui sodales eros, id lacinia mauris urna eu est. Proin pulvinar, augue sed convallis elementum, magna diam pharetra magna, id vestibulum est eros
+                        vitae ante. Ut auctor erat a tellus venenatis eu fermentum lorem scelerisque. Cras dignissim leo ornare massa sollicitudin sit amet pulvinar turpis hendrerit. Morbi hendrerit nunc eget turpis luctus id ultricies lorem consequat. Donec eu lacus sed mauris
+                        sollicitudin laoreet. Cras vitae sodales diam. Donec mollis, libero ut pellentesque dignissim, risus orci ornare nisi, sed eleifend enim purus malesuada neque. Nulla tellus sem, scelerisque sed sagittis id, eleifend venenatis ligula. Vivamus placerat
+                        neque sit amet metus ultricies facilisis. Nulla a odio magna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed commodo quam eu enim lacinia vitae ultrices nulla mollis. Aenean eget lectus turpis, at ultrices
+                        leo. Nulla vehicula magna in risus ornare vestibulum. Integer gravida magna quam. Donec augue ante, fringilla non congue eu, aliquam lacinia nisi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas nisl
+                        ante, suscipit ut suscipit nec, dictum sit amet orci. Maecenas fermentum sapien turpis, sit amet eleifend justo. Aenean auctor interdum sem sed tincidunt. Aliquam ullamcorper malesuada fermentum. Nunc consectetur, ipsum et pulvinar ultrices, lorem nibh
+                        egestas sapien, at egestas lorem metus sit amet lacus. Maecenas non feugiat orci. Curabitur imperdiet tempus lacus, volutpat fermentum diam convallis a. In hac habitasse platea dictumst. Pellentesque nec ipsum diam, at consectetur elit. Duis feugiat ullamcorper
+                        libero tincidunt aliquet. Sed leo nisl, iaculis non pellentesque nec, scelerisque vel felis</div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta, lorem sit amet feugiat lacinia, mi dui sodales eros, id lacinia mauris urna eu est. Proin pulvinar, augue sed convallis elementum, magna diam pharetra magna, id vestibulum est eros
+                        vitae ante. Ut auctor erat a tellus venenatis eu fermentum lorem scelerisque. Cras dignissim leo ornare massa sollicitudin sit amet pulvinar turpis hendrerit. Morbi hendrerit nunc eget turpis luctus id ultricies lorem consequat. Donec eu lacus sed mauris
+                        sollicitudin laoreet. Cras vitae sodales diam. Donec mollis, libero ut pellentesque dignissim, risus orci ornare nisi, sed eleifend enim purus malesuada neque. Nulla tellus sem, scelerisque sed sagittis id, eleifend venenatis ligula. Vivamus placerat
+                        neque sit amet metus ultricies facilisis. Nulla a odio magna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed commodo quam eu enim lacinia vitae ultrices nulla mollis. Aenean eget lectus turpis, at ultrices
+                        leo. Nulla vehicula magna in risus ornare vestibulum. Integer gravida magna quam. Donec augue ante, fringilla non congue eu, aliquam lacinia nisi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas nisl
+                        ante, suscipit ut suscipit nec, dictum sit amet orci. Maecenas fermentum sapien turpis, sit amet eleifend justo. Aenean auctor interdum sem sed tincidunt. Aliquam ullamcorper malesuada fermentum. Nunc consectetur, ipsum et pulvinar ultrices, lorem nibh
+                        egestas sapien, at egestas lorem metus sit amet lacus. Maecenas non feugiat orci. Curabitur imperdiet tempus lacus, volutpat fermentum diam convallis a. In hac habitasse platea dictumst. Pellentesque nec ipsum diam, at consectetur elit. Duis feugiat ullamcorper
+                        libero tincidunt aliquet. Sed leo nisl, iaculis non pellentesque nec, scelerisque vel felis</div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta, lorem sit amet feugiat lacinia, mi dui sodales eros, id lacinia mauris urna eu est. Proin pulvinar, augue sed convallis elementum, magna diam pharetra magna, id vestibulum est eros
+                        vitae ante. Ut auctor erat a tellus venenatis eu fermentum lorem scelerisque. Cras dignissim leo ornare massa sollicitudin sit amet pulvinar turpis hendrerit. Morbi hendrerit nunc eget turpis luctus id ultricies lorem consequat. Donec eu lacus sed mauris
+                        sollicitudin laoreet. Cras vitae sodales diam. Donec mollis, libero ut pellentesque dignissim, risus orci ornare nisi, sed eleifend enim purus malesuada neque. Nulla tellus sem, scelerisque sed sagittis id, eleifend venenatis ligula. Vivamus placerat
+                        neque sit amet metus ultricies facilisis. Nulla a odio magna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed commodo quam eu enim lacinia vitae ultrices nulla mollis. Aenean eget lectus turpis, at ultrices
+                        leo. Nulla vehicula magna in risus ornare vestibulum. Integer gravida magna quam. Donec augue ante, fringilla non congue eu, aliquam lacinia nisi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas nisl
+                        ante, suscipit ut suscipit nec, dictum sit amet orci. Maecenas fermentum sapien turpis, sit amet eleifend justo. Aenean auctor interdum sem sed tincidunt. Aliquam ullamcorper malesuada fermentum. Nunc consectetur, ipsum et pulvinar ultrices, lorem nibh
+                        egestas sapien, at egestas lorem metus sit amet lacus. Maecenas non feugiat orci. Curabitur imperdiet tempus lacus, volutpat fermentum diam convallis a. In hac habitasse platea dictumst. Pellentesque nec ipsum diam, at consectetur elit. Duis feugiat ullamcorper
+                        libero tincidunt aliquet. Sed leo nisl, iaculis non pellentesque nec, scelerisque vel felis</div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta, lorem sit amet feugiat lacinia, mi dui sodales eros, id lacinia mauris urna eu est. Proin pulvinar, augue sed convallis elementum, magna diam pharetra magna, id vestibulum est eros
+                        vitae ante. Ut auctor erat a tellus venenatis eu fermentum lorem scelerisque. Cras dignissim leo ornare massa sollicitudin sit amet pulvinar turpis hendrerit. Morbi hendrerit nunc eget turpis luctus id ultricies lorem consequat. Donec eu lacus sed mauris
+                        sollicitudin laoreet. Cras vitae sodales diam. Donec mollis, libero ut pellentesque dignissim, risus orci ornare nisi, sed eleifend enim purus malesuada neque. Nulla tellus sem, scelerisque sed sagittis id, eleifend venenatis ligula. Vivamus placerat
+                        neque sit amet metus ultricies facilisis. Nulla a odio magna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed commodo quam eu enim lacinia vitae ultrices nulla mollis. Aenean eget lectus turpis, at ultrices
+                        leo. Nulla vehicula magna in risus ornare vestibulum. Integer gravida magna quam. Donec augue ante, fringilla non congue eu, aliquam lacinia nisi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas nisl
+                        ante, suscipit ut suscipit nec, dictum sit amet orci. Maecenas fermentum sapien turpis, sit amet eleifend justo. Aenean auctor interdum sem sed tincidunt. Aliquam ullamcorper malesuada fermentum. Nunc consectetur, ipsum et pulvinar ultrices, lorem nibh
+                        egestas sapien, at egestas lorem metus sit amet lacus. Maecenas non feugiat orci. Curabitur imperdiet tempus lacus, volutpat fermentum diam convallis a. In hac habitasse platea dictumst. Pellentesque nec ipsum diam, at consectetur elit. Duis feugiat ullamcorper
+                        libero tincidunt aliquet. Sed leo nisl, iaculis non pellentesque nec, scelerisque vel felis</div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta, lorem sit amet feugiat lacinia, mi dui sodales eros, id lacinia mauris urna eu est. Proin pulvinar, augue sed convallis elementum, magna diam pharetra magna, id vestibulum est eros
+                        vitae ante. Ut auctor erat a tellus venenatis eu fermentum lorem scelerisque. Cras dignissim leo ornare massa sollicitudin sit amet pulvinar turpis hendrerit. Morbi hendrerit nunc eget turpis luctus id ultricies lorem consequat. Donec eu lacus sed mauris
+                        sollicitudin laoreet. Cras vitae sodales diam. Donec mollis, libero ut pellentesque dignissim, risus orci ornare nisi, sed eleifend enim purus malesuada neque. Nulla tellus sem, scelerisque sed sagittis id, eleifend venenatis ligula. Vivamus placerat
+                        neque sit amet metus ultricies facilisis. Nulla a odio magna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed commodo quam eu enim lacinia vitae ultrices nulla mollis. Aenean eget lectus turpis, at ultrices
+                        leo. Nulla vehicula magna in risus ornare vestibulum. Integer gravida magna quam. Donec augue ante, fringilla non congue eu, aliquam lacinia nisi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas nisl
+                        ante, suscipit ut suscipit nec, dictum sit amet orci. Maecenas fermentum sapien turpis, sit amet eleifend justo. Aenean auctor interdum sem sed tincidunt. Aliquam ullamcorper malesuada fermentum. Nunc consectetur, ipsum et pulvinar ultrices, lorem nibh
+                        egestas sapien, at egestas lorem metus sit amet lacus. Maecenas non feugiat orci. Curabitur imperdiet tempus lacus, volutpat fermentum diam convallis a. In hac habitasse platea dictumst. Pellentesque nec ipsum diam, at consectetur elit. Duis feugiat ullamcorper
+                        libero tincidunt aliquet. Sed leo nisl, iaculis non pellentesque nec, scelerisque vel felis</div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta, lorem sit amet feugiat lacinia, mi dui sodales eros, id lacinia mauris urna eu est. Proin pulvinar, augue sed convallis elementum, magna diam pharetra magna, id vestibulum est eros
+                        vitae ante. Ut auctor erat a tellus venenatis eu fermentum lorem scelerisque. Cras dignissim leo ornare massa sollicitudin sit amet pulvinar turpis hendrerit. Morbi hendrerit nunc eget turpis luctus id ultricies lorem consequat. Donec eu lacus sed mauris
+                        sollicitudin laoreet. Cras vitae sodales diam. Donec mollis, libero ut pellentesque dignissim, risus orci ornare nisi, sed eleifend enim purus malesuada neque. Nulla tellus sem, scelerisque sed sagittis id, eleifend venenatis ligula. Vivamus placerat
+                        neque sit amet metus ultricies facilisis. Nulla a odio magna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed commodo quam eu enim lacinia vitae ultrices nulla mollis. Aenean eget lectus turpis, at ultrices
+                        leo. Nulla vehicula magna in risus ornare vestibulum. Integer gravida magna quam. Donec augue ante, fringilla non congue eu, aliquam lacinia nisi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas nisl
+                        ante, suscipit ut suscipit nec, dictum sit amet orci. Maecenas fermentum sapien turpis, sit amet eleifend justo. Aenean auctor interdum sem sed tincidunt. Aliquam ullamcorper malesuada fermentum. Nunc consectetur, ipsum et pulvinar ultrices, lorem nibh
+                        egestas sapien, at egestas lorem metus sit amet lacus. Maecenas non feugiat orci. Curabitur imperdiet tempus lacus, volutpat fermentum diam convallis a. In hac habitasse platea dictumst. Pellentesque nec ipsum diam, at consectetur elit. Duis feugiat ullamcorper
+                        libero tincidunt aliquet. Sed leo nisl, iaculis non pellentesque nec, scelerisque vel felis</div>m ipsum dolor sit amet, consectetur adipiscing elit. Duis porta, lorem sit amet feugiat lacinia, mi dui sodales eros, id lacinia mauris urna eu est. Proin pulvinar, augue sed convallis elementum, magna diam pharetra magna, id vestibulum est eros
+                        vitae ante. Ut auctor erat a tellus venenatis eu fermentum lorem scelerisque. Cras dignissim leo ornare massa sollicitudin sit amet pulvinar turpis hendrerit. Morbi hendrerit nunc eget turpis luctus id ultricies lorem consequat. Donec eu lacus sed mauris
+                        sollicitudin laoreet. Cras vitae sodales diam. Donec mollis, libero ut pellentesque dignissim, risus orci ornare nisi, sed eleifend enim purus malesuada neque. Nulla tellus sem, scelerisque sed sagittis id, eleifend venenatis ligula. Vivamus placerat
+                        neque sit amet metus ultricies facilisis. Nulla a odio magna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed commodo quam eu enim lacinia vitae ultrices nulla mollis. Aenean eget lectus turpis, at ultrices
+                        leo. Nulla vehicula magna in risus ornare vestibulum. Integer gravida magna quam. Donec augue ante, fringilla non congue eu, aliquam lacinia nisi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas nisl
+                        ante, suscipit ut suscipit nec, dictum sit amet orci. Maecenas fermentum sapien turpis, sit amet eleifend justo. Aenean auctor interdum sem sed tincidunt. Aliquam ullamcorper malesuada fermentum. Nunc consectetur, ipsum et pulvinar ultrices, lorem nibh
+                        egestas sapien, at egestas lorem metus sit amet lacus. Maecenas non feugiat orci. Curabitur imperdiet tempus lacus, volutpat fermentum diam convallis a. In hac habitasse platea dictumst. Pellentesque nec ipsum diam, at consectetur elit. Duis feugiat ullamcorper
+                        libero tincidunt aliquet. Sed leo nisl, iaculis non pellentesque nec, scelerisque vel felis</div>
+                   
+                    
+                </div>
+            
+            <!---scroll 结束-->
+            
+            <footer id='footerui'>
+                <a href="#main" id='navbar_home' class='icon home'>首页 <span class='af-badge lr'>6</span></a>
+                <a href='#info' id="navbar_info" class='icon info'>关于我们</a>
+                <a href='#webslider' id="navbar_info" class='icon info'>网站滚动</a>
+                
+            	<a href='#settings' id="navbar_settings" class='icon settings'>系统设置</a>
+            </footer>           
+            <header id="testheader">
+                <a id="backButton" onclick="$.ui.goBack()" class='button'>Go Back</a>
+                	<h1>Custom Header</h1>
+
+            </header>
+            <!-- ------------------------------------------ -->
+            <nav>
+                <ul class="list">
+                    <li class="divider" class="icon home">Home</li>
+                    <li onclick="lsSetItem('111')">
+                        <a href="content.html?phonegap" data-pull-scroller="true" data-refresh-ajax="true">加载远程的数据</a>                    
+					</li>
+                 <li class="divider">UI</li>
+                    <li>
+                        <a href="content1.html" data-pull-scroller="true" data-refresh-ajax="true">内容一新页面打开</a>
+                    </li>
+                    <li onclick="scrollItem('1')">
+                        <a href='#webslider'>网站滚动1</a>
+                    </li>
+                    <li onclick="scrollItem('2')">
+                        <a href='#webslider'>网站滚动2</a>
+                    </li>                  
+                    <li>
+                        <a href="#uiapi">APIs</a>
+                    </li>
+                 <li class="divider">Plugins</li>
+                    <li>
+                        <a href="#webslider">Scroller</a>
+                    </li>
+                    <li>
+                        <a href="#webanimate">CSS3 animation</a>
+                    </li>
+                     <li>
+                        <a href="#webactionsheet">Action sheet</a>
+                    </li>
+
+                 <li class="divider">Menus</li>
+                    <li>
+                        <a  onclick="$.ui.toggleHeaderMenu();">Toggle Header</a>
+                    </li>
+                    <li>
+                        <a  onclick="$.ui.toggleSideMenu()">Toggle Side</a>
+                    </li>
+                    <li>
+                        <a  onclick="$.ui.toggleNavMenu()">Toggle Footer</a>
+                    </li>
+                </ul>
+            </nav>
+            
+        </div>
+
+    </body>
+</html>
